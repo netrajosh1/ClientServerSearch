@@ -1,0 +1,84 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
+import java.awt.Component;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
+public class SearchClient {
+    public SearchClient() {
+    }
+
+    public static void main(String[] var0) {
+        JOptionPane.showMessageDialog((Component)null, "Welcome!");
+
+        try {
+            String var1 = JOptionPane.showInputDialog("Enter the server hostname (e.g., localhost):");
+            int var2 = Integer.parseInt(JOptionPane.showInputDialog("Enter the server port number:"));
+            if (!var1.equals("localhost")) {
+                throw new IOException();
+            }
+
+            Socket var3 = new Socket(var1, var2);
+            PrintWriter var4 = new PrintWriter(var3.getOutputStream(), true);
+            new BufferedReader(new InputStreamReader(var3.getInputStream()));
+            JOptionPane.showMessageDialog((Component)null, "Connection established with the server.");
+            int var6 = 9;
+
+            do {
+                try {
+                    String var7 = JOptionPane.showInputDialog((Component)null, "Enter your search text: ");
+                    var4.println(var7);
+                    BufferedReader var8 = new BufferedReader(new FileReader("searchDatabase.txt"));
+                    ArrayList var10 = new ArrayList();
+
+                    String var9;
+                    int var12;
+                    while((var9 = var8.readLine()) != null) {
+                        String[] var11 = var9.split(";");
+                        if (var11.length >= 3) {
+                            var12 = Integer.parseInt(var11[0].trim());
+                            String var13 = var11[1].trim();
+                            if (var9.contains(var7)) {
+                                var10.add(var13);
+                            }
+                        }
+                    }
+
+                    int[] var18 = new int[var10.size()];
+
+                    for(var12 = 0; var12 < var10.size(); var18[var12] = var12++) {
+                    }
+
+                    if (var10.isEmpty()) {
+                        JOptionPane.showMessageDialog((Component)null, "Error: no text matching thesearch text has been processed.");
+                    } else {
+                        JOptionPane.showMessageDialog((Component)null, var10);
+                    }
+
+                    JOptionPane.showMessageDialog((Component)null, "Data has been processed");
+                    var6 = JOptionPane.showConfirmDialog((Component)null, "Would you like to search again?", "Search Text", 0);
+                } catch (IOException var14) {
+                    var14.printStackTrace();
+                } catch (ClassCastException var15) {
+                    var15.printStackTrace();
+                }
+            } while(var6 == 0);
+        } catch (IOException var16) {
+            JOptionPane.showMessageDialog((Component)null, "Error: Connection not established.");
+            var16.printStackTrace();
+        } catch (NumberFormatException var17) {
+            JOptionPane.showMessageDialog((Component)null, "Invalid port number.");
+            var17.printStackTrace();
+        }
+
+    }
+}
