@@ -1,0 +1,101 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class SearchServer {
+    private static final int PORT = 1234;
+
+    public SearchServer() {
+    }
+
+    public static void main(String[] var0) {
+        try {
+            ServerSocket var1 = new ServerSocket(1234);
+            System.out.println("Server is listening on port 1234");
+            ArrayList var2 = new ArrayList();
+
+            try {
+                BufferedReader var3 = new BufferedReader(new FileReader("searchDatabase.txt"));
+
+                String var4;
+                try {
+                    while((var4 = var3.readLine()) != null) {
+                        var2.add(var4);
+                    }
+                } catch (Throwable var15) {
+                    try {
+                        var3.close();
+                    } catch (Throwable var13) {
+                        var15.addSuppressed(var13);
+                    }
+
+                    throw var15;
+                }
+
+                var3.close();
+            } catch (IOException var16) {
+                var16.printStackTrace();
+            }
+
+            label69:
+            while(true) {
+                Socket var18 = var1.accept();
+                System.out.println("Client connected from: " + String.valueOf(var18.getInetAddress()));
+
+                try {
+                    BufferedReader var19 = new BufferedReader(new InputStreamReader(var18.getInputStream()));
+                    PrintWriter var5 = new PrintWriter(var18.getOutputStream(), true);
+                    String var6 = var19.readLine();
+                    System.out.println("Received search request: " + var6);
+                    ArrayList var7 = new ArrayList();
+                    Iterator var8 = var2.iterator();
+
+                    while(true) {
+                        String var11;
+                        String var12;
+                        do {
+                            String[] var10;
+                            do {
+                                String var9;
+                                if (!var8.hasNext()) {
+                                    var8 = var7.iterator();
+
+                                    while(var8.hasNext()) {
+                                        var9 = (String)var8.next();
+                                        var5.println(var9);
+                                    }
+
+                                    var18.close();
+                                    continue label69;
+                                }
+
+                                var9 = (String)var8.next();
+                                var10 = var9.split(";");
+                            } while(var10.length < 2);
+
+                            var11 = var10[1];
+                            var12 = var10.length > 2 ? var10[2] : "";
+                        } while(!var11.toLowerCase().contains(var6.toLowerCase()) && !var12.toLowerCase().contains(var6.toLowerCase()));
+
+                        var7.add(var11);
+                    }
+                } catch (IOException var14) {
+                    var14.printStackTrace();
+                }
+            }
+        } catch (IOException var17) {
+            var17.printStackTrace();
+        }
+    }
+}
